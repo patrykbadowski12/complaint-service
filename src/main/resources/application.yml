@@ -1,1 +1,13 @@
-spring.application.name: complaint-service
+server:
+  port: 8090
+
+spring:
+  application:
+    name: complaint-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/complaint_db
+    username: complaint_user
+    password: StrongPassword572!%
+  jpa:
+    hibernate:
+      ddl-auto: update
