@@ -5,8 +5,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,8 +20,17 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "COMPLAINTS")
-@Builder
+@Table(
+        name = "COMPLAINTS",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uq_reporter_product",
+                columnNames = {"reporterName", "productId"}
+        ),
+        indexes = {
+                @Index(name = "idx_reporter_name_product_id", columnList = "reporterName, productId")
+        }
+)
+@Builder(toBuilder = true)
 @Getter
 @Setter
 @AllArgsConstructor

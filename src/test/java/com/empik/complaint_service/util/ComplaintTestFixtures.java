@@ -17,7 +17,8 @@ public class ComplaintTestFixtures {
     public static final String COUNTRY = "Poland";
     public static final String COUNTRY_CODE = "PL";
     public static final String CITY = "Warsaw";
-    public static final int REPORT_COUNT = 1;
+    public static final int REPORT_COUNT_ONE = 1;
+    public static final int REPORT_COUNT_TWO = 2;
     public static final String TEST_IP = "77.65.32.1";
     public static final String HEADER_NAME_X_FORWARDER_FOR = "X-Forwarded-For";
 
@@ -30,8 +31,16 @@ public class ComplaintTestFixtures {
     }
 
     public static ComplaintEntity createComplaintEntity() {
+        return createComplaintEntity(COMPLAINT_ID);
+    }
+
+    public static ComplaintEntity createComplaintEntityWithoutId() {
+        return createComplaintEntity(null);
+    }
+
+    private static ComplaintEntity createComplaintEntity(Long id) {
         return ComplaintEntity.builder()
-                .id(COMPLAINT_ID)
+                .id(id)
                 .productId(PRODUCT_ID)
                 .description(DESCRIPTION)
                 .createdAt(LocalDateTime.now())
@@ -39,7 +48,7 @@ public class ComplaintTestFixtures {
                 .reporterName(REPORTER_NAME)
                 .reporterEmail(REPORTER_EMAIL)
                 .reporterCountry(COUNTRY)
-                .reportCount(REPORT_COUNT)
+                .reportCount(REPORT_COUNT_ONE)
                 .build();
     }
 

@@ -22,9 +22,9 @@ public class ComplaintController {
     private final IpAddressService ipAddressService;
 
     @PostMapping
-    public ResponseEntity<ComplaintResponse> createComplaint(
+    public ResponseEntity<ComplaintResponse> registerComplaint(
             final HttpServletRequest httpServletRequest,
             @Valid@RequestBody final ComplaintRequest request) {
-        return ResponseEntity.ok(complaintService.createComplaint(request, ipAddressService.getClientIp(httpServletRequest)));
+        return ResponseEntity.ok(complaintService.registerComplaint(request, ipAddressService.getClientIp(httpServletRequest)));
     }
 }
