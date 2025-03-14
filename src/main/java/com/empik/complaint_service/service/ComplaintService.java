@@ -15,11 +15,12 @@ import java.util.Optional;
 public class ComplaintService {
 
     private final ComplaintRepository complaintRepository;
-    private static final String DEFAULT_COUNTRY = "Poland";
+    private final GeoLocationService geoLocationService;
 
-    public ComplaintResponse createComplaint(final ComplaintRequest request) {
+    public ComplaintResponse createComplaint(final ComplaintRequest request, final String reporterIpAddress) {
+        final var reporterCountryByIp = geoLocationService.getCountryByIp(reporterIpAddress);
         return Optional.of(request)
-                .map(req -> ComplaintMapper.createComplaintEntity(req, DEFAULT_COUNTRY))
+                .map(req -> ComplaintMapper.createComplaintEntity(req, reporterCountryByIp))
                 .map(complaintRepository::save)
                 .map(savedComplaint -> {
                     log.debug("Complaint with id {} successfully created.", savedComplaint.getId());

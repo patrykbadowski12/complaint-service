@@ -3,6 +3,8 @@ package com.empik.complaint_service.controller;
 import com.empik.complaint_service.controller.model.ComplaintRequest;
 import com.empik.complaint_service.controller.model.ComplaintResponse;
 import com.empik.complaint_service.service.ComplaintService;
+import com.empik.complaint_service.service.IpAddressService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class ComplaintController {
 
     private final ComplaintService complaintService;
+    private final IpAddressService ipAddressService;
 
     @PostMapping
-    public ResponseEntity<ComplaintResponse> createComplaint(@Valid @RequestBody final ComplaintRequest request) {
-        return ResponseEntity.ok(complaintService.createComplaint(request));
+    public ResponseEntity<ComplaintResponse> createComplaint(
+            final HttpServletRequest httpServletRequest,
+            @Valid@RequestBody final ComplaintRequest request) {
+        return ResponseEntity.ok(complaintService.createComplaint(request, ipAddressService.getClientIp(httpServletRequest)));
     }
 }

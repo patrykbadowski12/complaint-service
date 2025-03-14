@@ -13,10 +13,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.COMPLAINT_ID;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.DESCRIPTION;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.PRODUCT_ID;
-import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORTER_COUNTRY;
+import static com.empik.complaint_service.util.ComplaintTestFixtures.COUNTRY;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORTER_EMAIL;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORTER_NAME;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORT_COUNT;
+import static com.empik.complaint_service.util.ComplaintTestFixtures.TEST_IP;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.createComplaintEntity;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.createComplaintRequest;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,18 +28,19 @@ class ComplaintServiceTest {
 
     @Mock
     private ComplaintRepository complaintRepository;
-
+    @Mock
+    private GeoLocationService geoLocationService;
     @InjectMocks
     private ComplaintService complaintService;
 
     @Test
     void createComplaint(final SoftAssertions softAssertions) {
         // given
-        when(complaintRepository.save(any(ComplaintEntity.class)))
-                .thenReturn(createComplaintEntity());
+        when(complaintRepository.save(any(ComplaintEntity.class))).thenReturn(createComplaintEntity());
+        when(geoLocationService.getCountryByIp(TEST_IP)).thenReturn(COUNTRY);
 
         // when
-        final var result = complaintService.createComplaint(createComplaintRequest());
+        final var result = complaintService.createComplaint(createComplaintRequest(), TEST_IP);
 
         // then
         softAssertions.assertThat(result).satisfies(response -> {
@@ -48,7 +50,7 @@ class ComplaintServiceTest {
             softAssertions.assertThat(response.createdAt()).isNotNull();
             softAssertions.assertThat(response.reporterName()).isEqualTo(REPORTER_NAME);
             softAssertions.assertThat(response.reporterEmail()).isEqualTo(REPORTER_EMAIL);
-            softAssertions.assertThat(response.reporterCountry()).isEqualTo(REPORTER_COUNTRY);
+            softAssertions.assertThat(response.reporterCountry()).isEqualTo(COUNTRY);
             softAssertions.assertThat(response.reportCount()).isEqualTo(REPORT_COUNT);
         });
     }

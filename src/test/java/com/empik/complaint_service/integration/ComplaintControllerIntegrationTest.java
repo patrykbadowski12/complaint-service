@@ -10,17 +10,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
 import static com.empik.complaint_service.util.ComplaintTestFixtures.COMPLAINT_ID;
+import static com.empik.complaint_service.util.ComplaintTestFixtures.COUNTRY;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.DESCRIPTION;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.PRODUCT_ID;
-import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORTER_COUNTRY;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORTER_EMAIL;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORTER_NAME;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORT_COUNT;
+import static com.empik.complaint_service.util.ComplaintTestFixtures.TEST_IP;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.createComplaintRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ComplaintControllerIntegrationTest {
 
     private static final String DEFAULT_URI = "/api/v1/complaints";
+    private static final String HEADER_NAME_X_FORWARDER_FOR = "X-Forwarded-For";
 
     @Autowired
     private TestRestTemplate testRestTemplate;
@@ -41,12 +45,19 @@ class ComplaintControllerIntegrationTest {
     void setUp() {
         jdbcTemplate.execute("TRUNCATE TABLE COMPLAINTS RESTART IDENTITY CASCADE");
     }
+
     @Test
     void shouldCreateComplaint(final SoftAssertions softAssertions) {
-        // given & when
+        // given
+        final var headers = new HttpHeaders();
+        headers.set(HEADER_NAME_X_FORWARDER_FOR, TEST_IP);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        final var request = new HttpEntity<>(createComplaintRequest(), headers);
+
+        // when
         final var response = testRestTemplate.postForEntity(
                 DEFAULT_URI,
-                new HttpEntity<>(createComplaintRequest()),
+                request,
                 ComplaintResponse.class
         );
 
@@ -59,7 +70,7 @@ class ComplaintControllerIntegrationTest {
             softAssertions.assertThat(complaintResponse.createdAt()).isNotNull();
             softAssertions.assertThat(complaintResponse.reporterName()).isEqualTo(REPORTER_NAME);
             softAssertions.assertThat(complaintResponse.reporterEmail()).isEqualTo(REPORTER_EMAIL);
-            softAssertions.assertThat(complaintResponse.reporterCountry()).isEqualTo(REPORTER_COUNTRY);
+            softAssertions.assertThat(complaintResponse.reporterCountry()).isEqualTo(COUNTRY);
             softAssertions.assertThat(complaintResponse.reportCount()).isEqualTo(REPORT_COUNT);
         });
     }

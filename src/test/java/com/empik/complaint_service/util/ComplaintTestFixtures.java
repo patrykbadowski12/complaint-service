@@ -3,6 +3,7 @@ package com.empik.complaint_service.util;
 import com.empik.complaint_service.controller.model.ComplaintRequest;
 import com.empik.complaint_service.controller.model.Reporter;
 import com.empik.complaint_service.repository.ComplaintEntity;
+import com.empik.complaint_service.service.GeoIpResponse;
 
 import java.time.LocalDateTime;
 
@@ -13,8 +14,12 @@ public class ComplaintTestFixtures {
     public static final String DESCRIPTION = "Product is not working";
     public static final String REPORTER_NAME = "Jan Kowalski";
     public static final String REPORTER_EMAIL = "jankowalski1995@email.com";
-    public static final String REPORTER_COUNTRY = "Poland";
+    public static final String COUNTRY = "Poland";
+    public static final String COUNTRY_CODE = "PL";
+    public static final String CITY = "Warsaw";
     public static final int REPORT_COUNT = 1;
+    public static final String TEST_IP = "77.65.32.1";
+    public static final String HEADER_NAME_X_FORWARDER_FOR = "X-Forwarded-For";
 
     public static ComplaintRequest createComplaintRequest() {
         return new ComplaintRequest(
@@ -33,8 +38,12 @@ public class ComplaintTestFixtures {
                 .updatedAt(LocalDateTime.now())
                 .reporterName(REPORTER_NAME)
                 .reporterEmail(REPORTER_EMAIL)
-                .reporterCountry(REPORTER_COUNTRY)
+                .reporterCountry(COUNTRY)
                 .reportCount(REPORT_COUNT)
                 .build();
+    }
+
+    public static GeoIpResponse createGeoIpResponse() {
+        return new GeoIpResponse(COUNTRY, COUNTRY_CODE, CITY);
     }
 }
