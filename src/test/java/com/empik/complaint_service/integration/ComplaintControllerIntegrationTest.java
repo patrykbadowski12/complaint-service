@@ -212,4 +212,43 @@ class ComplaintControllerIntegrationTest {
         assertThat(response.getBody()).containsKey(PAGE_ERROR_KEY);
         assertThat(response.getBody()).containsKey(SIZE_ERROR_KEY);
     }
+
+    @Test
+    void getComplaint(final SoftAssertions softAssertions) {
+        // given
+        complaintRepository.save(createComplaintEntityWithoutId());
+
+        // when
+        final var response = testRestTemplate.getForEntity(
+                DEFAULT_URI + "/" + COMPLAINT_ID,
+                ComplaintResponse.class
+        );
+
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        softAssertions.assertThat(response.getBody()).satisfies(complaintResponse -> {
+            softAssertions.assertThat(complaintResponse.complaintId()).isEqualTo(COMPLAINT_ID);
+            softAssertions.assertThat(complaintResponse.productId()).isEqualTo(PRODUCT_ID);
+            softAssertions.assertThat(complaintResponse.description()).isEqualTo(DESCRIPTION);
+            softAssertions.assertThat(complaintResponse.createdAt()).isNotNull();
+            softAssertions.assertThat(complaintResponse.reporterName()).isEqualTo(REPORTER_NAME);
+            softAssertions.assertThat(complaintResponse.reporterEmail()).isEqualTo(REPORTER_EMAIL);
+            softAssertions.assertThat(complaintResponse.reporterCountry()).isEqualTo(COUNTRY);
+            softAssertions.assertThat(complaintResponse.reportCount()).isEqualTo(REPORT_COUNT_ONE);
+        });
+    }
+
+    @Test
+    void getComplaintWithNotFoundError() {
+        // given & when
+        final var response = testRestTemplate.getForEntity(
+                DEFAULT_URI + "/" + COMPLAINT_ID,
+                String.class
+        );
+
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody()).contains("Complaint with id " + COMPLAINT_ID + " not found");
+    }
 }

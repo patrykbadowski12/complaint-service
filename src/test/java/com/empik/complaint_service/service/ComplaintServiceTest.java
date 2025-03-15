@@ -30,6 +30,8 @@ import static com.empik.complaint_service.util.ComplaintTestFixtures.createCompl
 import static com.empik.complaint_service.util.ComplaintTestFixtures.createComplaintRequest;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.createPageRequest;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.createUpdateComplaintRequest;
+import static java.util.Optional.of;
+import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -73,7 +75,7 @@ class ComplaintServiceTest {
     void increaseReportCountForExistingComplaint(final SoftAssertions softAssertions) {
         // given
         final var complaintEntity = createComplaintEntity();
-        when(complaintRepository.findByReporterNameAndProductId(anyString(), anyLong())).thenReturn(Optional.of(complaintEntity));
+        when(complaintRepository.findByReporterNameAndProductId(anyString(), anyLong())).thenReturn(of(complaintEntity));
         complaintEntity.setReportCount(complaintEntity.getReportCount() + 1);
         when(complaintRepository.save(any(ComplaintEntity.class))).thenReturn(complaintEntity);
 
@@ -97,7 +99,7 @@ class ComplaintServiceTest {
     void updateDescriptionForExistingComplaint(final SoftAssertions softAssertions) {
         // given
         final var complaintEntity = createComplaintEntity();
-        when(complaintRepository.findById(COMPLAINT_ID)).thenReturn(Optional.of(complaintEntity));
+        when(complaintRepository.findById(COMPLAINT_ID)).thenReturn(of(complaintEntity));
         complaintEntity.setDescription(UPDATED_DESCRIPTION);
         when(complaintRepository.save(any(ComplaintEntity.class))).thenReturn(complaintEntity);
         // when
@@ -139,5 +141,33 @@ class ComplaintServiceTest {
 
         // then
         assertThat(result).isNotEmpty().hasSize(NUMBER_OF_COMPLAINTS);
+    }
+
+    @Test
+    void getSingleComplaint(final SoftAssertions softAssertions) {
+        // given
+        when(complaintRepository.findById(COMPLAINT_ID)).thenReturn(ofNullable(createComplaintEntity()));
+
+        // when
+        final var result = complaintService.getComplaint(COMPLAINT_ID);
+
+        // then
+        softAssertions.assertThat(result).satisfies(response -> {
+            softAssertions.assertThat(response.complaintId()).isEqualTo(COMPLAINT_ID);
+            softAssertions.assertThat(response.productId()).isEqualTo(PRODUCT_ID);
+            softAssertions.assertThat(response.description()).isEqualTo(DESCRIPTION);
+            softAssertions.assertThat(response.createdAt()).isNotNull();
+            softAssertions.assertThat(response.reporterName()).isEqualTo(REPORTER_NAME);
+            softAssertions.assertThat(response.reporterEmail()).isEqualTo(REPORTER_EMAIL);
+            softAssertions.assertThat(response.reporterCountry()).isEqualTo(COUNTRY);
+            softAssertions.assertThat(response.reportCount()).isEqualTo(REPORT_COUNT_ONE);
+        });
+    }
+
+    @Test
+    void getSingleComplaintNotFound() {
+        assertThatThrownBy(() -> complaintService.getComplaint(COMPLAINT_ID))
+                .isInstanceOf(ComplaintNotFoundException.class)
+                .hasMessage("Complaint with id " + COMPLAINT_ID + " not found");
     }
 }

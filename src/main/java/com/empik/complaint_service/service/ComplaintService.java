@@ -38,6 +38,18 @@ public class ComplaintService {
                 .orElseThrow(() -> handleComplaintNotFound(id));
     }
 
+    public Page<ComplaintResponse> getComplaints(final PageRequest pageRequest) {
+        log.info("Page request: {} {}", pageRequest.getPageSize(), pageRequest.getPageNumber());
+        return complaintRepository.findAll(pageRequest)
+                .map(ComplaintMapper::mapComplaintEntityToDto);
+    }
+
+    public ComplaintResponse getComplaint(final Long id) {
+        return complaintRepository.findById(id)
+                .map(ComplaintMapper::mapComplaintEntityToDto)
+                .orElseThrow(() -> handleComplaintNotFound(id));
+    }
+
     private ComplaintResponse increaseComplaintReportCount(final ComplaintEntity existingComplaint) {
         return Optional.of(existingComplaint)
                 .map(complaint -> complaint.toBuilder()
@@ -72,11 +84,5 @@ public class ComplaintService {
     private ComplaintNotFoundException handleComplaintNotFound(final Long id) {
         log.info("Complaint with id {} not found", id);
         return new ComplaintNotFoundException("Complaint with id " + id + " not found");
-    }
-
-    public Page<ComplaintResponse> getComplaints(final PageRequest pageRequest) {
-        log.info("Page request: {} {}", pageRequest.getPageSize(), pageRequest.getPageNumber());
-        return complaintRepository.findAll(pageRequest)
-                .map(ComplaintMapper::mapComplaintEntityToDto);
     }
 }

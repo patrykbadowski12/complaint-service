@@ -53,4 +53,10 @@ public class ComplaintController {
         final var complaints = complaintService.getComplaints(PageRequest.of(page, size));
         return complaints.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(complaints);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ComplaintResponse> getComplaint(@PathVariable final Long id) {
+        return ResponseEntity.ok(complaintService.getComplaint(id));
+    }
+
 }
