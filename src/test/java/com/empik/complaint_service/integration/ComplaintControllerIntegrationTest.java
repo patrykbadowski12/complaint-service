@@ -5,7 +5,6 @@ import com.empik.complaint_service.repository.ComplaintRepository;
 import com.empik.complaint_service.util.RestPageImpl;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -53,14 +51,7 @@ class ComplaintControllerIntegrationTest {
     @Autowired
     private TestRestTemplate testRestTemplate;
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-    @Autowired
     private ComplaintRepository complaintRepository;
-
-    @BeforeEach
-    void setUp() {
-        jdbcTemplate.execute("TRUNCATE TABLE COMPLAINTS RESTART IDENTITY CASCADE");
-    }
 
     @Test
     void createNewComplaint(final SoftAssertions softAssertions) {

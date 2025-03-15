@@ -9,8 +9,12 @@ spring:
     username: complaint_user
     password: StrongPassword572!%
   jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
+
 
 logging:
   level:

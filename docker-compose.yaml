@@ -12,6 +12,24 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U complaint_user -d complaint_db"]
+      interval: 5s
+      retries: 5
+      timeout: 3s
+
+  complaint-service:
+    build: .
+    container_name: complaint-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/complaint_db
+      SPRING_DATASOURCE_USERNAME: complaint_user
+      SPRING_DATASOURCE_PASSWORD: StrongPassword572!%
+    ports:
+      - "8090:8090"
 
 volumes:
   postgres_data:
