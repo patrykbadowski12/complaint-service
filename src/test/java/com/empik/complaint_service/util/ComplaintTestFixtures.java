@@ -2,6 +2,7 @@ package com.empik.complaint_service.util;
 
 import com.empik.complaint_service.controller.model.ComplaintRequest;
 import com.empik.complaint_service.controller.model.Reporter;
+import com.empik.complaint_service.controller.model.UpdateComplaintRequest;
 import com.empik.complaint_service.repository.ComplaintEntity;
 import com.empik.complaint_service.service.GeoIpResponse;
 
@@ -12,6 +13,7 @@ public class ComplaintTestFixtures {
     public static final Long COMPLAINT_ID = 1L;
     public static final Long PRODUCT_ID = 8520L;
     public static final String DESCRIPTION = "Product is not working";
+    public static final String UPDATED_DESCRIPTION = "Product is not working. Some parts are missing.";
     public static final String REPORTER_NAME = "Jan Kowalski";
     public static final String REPORTER_EMAIL = "jankowalski1995@email.com";
     public static final String COUNTRY = "Poland";
@@ -54,5 +56,9 @@ public class ComplaintTestFixtures {
 
     public static GeoIpResponse createGeoIpResponse() {
         return new GeoIpResponse(COUNTRY, COUNTRY_CODE, CITY);
+    }
+
+    public static UpdateComplaintRequest createUpdateComplaintRequest() {
+        return new UpdateComplaintRequest(UPDATED_DESCRIPTION);
     }
 }

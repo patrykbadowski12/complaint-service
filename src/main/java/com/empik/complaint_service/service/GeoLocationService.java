@@ -9,18 +9,17 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class GeoLocationService {
+class GeoLocationService {
 
     private static final String UNKNOWN_VALUE = "Unknown";
 
     private final GeoIpFeignClient geoIpFeignClient;
 
-    public String getCountryByIp(final String ip) {
-        log.debug("Sending request to geoApiInfo with IP: {}", ip);
-
+    String getCountryByIp(final String ip) {
+        log.info("Sending request to geoApiInfo with IP: {}", ip);
         try {
             final var response = geoIpFeignClient.getGeoIpInfo(ip);
-            log.debug("Response from geoApiInfo: {}", response);
+            log.info("Response from geoApiInfo: {}", response);
             return StringUtils.isNotEmpty(response.country()) ? response.country() : UNKNOWN_VALUE;
         } catch (FeignException e) {
             log.error("Error while fetching geo info for IP: {}. Error: {}", ip, e.getMessage());

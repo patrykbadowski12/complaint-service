@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,8 +28,10 @@ import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORTER_NA
 import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORT_COUNT_ONE;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORT_COUNT_TWO;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.TEST_IP;
+import static com.empik.complaint_service.util.ComplaintTestFixtures.UPDATED_DESCRIPTION;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.createComplaintEntityWithoutId;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.createComplaintRequest;
+import static com.empik.complaint_service.util.ComplaintTestFixtures.createUpdateComplaintRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SoftAssertionsExtension.class)
@@ -82,7 +85,7 @@ class ComplaintControllerIntegrationTest {
     }
 
     @Test
-    void updateExistingComplaint(final SoftAssertions softAssertions) {
+    void increaseComplaintReportCount(final SoftAssertions softAssertions) {
         // given
         complaintRepository.save(createComplaintEntityWithoutId());
         final var headers = new HttpHeaders();
@@ -109,5 +112,48 @@ class ComplaintControllerIntegrationTest {
             softAssertions.assertThat(complaintResponse.reporterCountry()).isEqualTo(COUNTRY);
             softAssertions.assertThat(complaintResponse.reportCount()).isEqualTo(REPORT_COUNT_TWO);
         });
+    }
+
+    @Test
+    void updateComplaintDescription(final SoftAssertions softAssertions) {
+        // given
+        complaintRepository.save(createComplaintEntityWithoutId());
+
+        // when
+        final var response = testRestTemplate.exchange(
+                DEFAULT_URI + "/" + COMPLAINT_ID,
+                HttpMethod.PUT,
+                new HttpEntity<>(createUpdateComplaintRequest()),
+                ComplaintResponse.class
+        );
+
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        softAssertions.assertThat(response.getBody()).satisfies(complaintResponse -> {
+            softAssertions.assertThat(complaintResponse.complaintId()).isEqualTo(COMPLAINT_ID);
+            softAssertions.assertThat(complaintResponse.productId()).isEqualTo(PRODUCT_ID);
+            softAssertions.assertThat(complaintResponse.description()).isEqualTo(UPDATED_DESCRIPTION);
+            softAssertions.assertThat(complaintResponse.createdAt()).isNotNull();
+            softAssertions.assertThat(complaintResponse.reporterName()).isEqualTo(REPORTER_NAME);
+            softAssertions.assertThat(complaintResponse.reporterEmail()).isEqualTo(REPORTER_EMAIL);
+            softAssertions.assertThat(complaintResponse.reporterCountry()).isEqualTo(COUNTRY);
+            softAssertions.assertThat(complaintResponse.reportCount()).isEqualTo(REPORT_COUNT_ONE);
+        });
+    }
+
+    @Test
+    void updateComplaintDescriptionReturnNotFound () {
+        // given & when
+        final var response = testRestTemplate.exchange(
+                DEFAULT_URI + "/" + COMPLAINT_ID,
+                HttpMethod.PUT,
+                new HttpEntity<>(createUpdateComplaintRequest()),
+                String.class
+        );
+
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody()).contains("Complaint with id " + COMPLAINT_ID + " not found");
     }
 }
