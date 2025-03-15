@@ -10,12 +10,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.empik.complaint_service.util.ComplaintTestFixtures.COMPLAINT_ID;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.COUNTRY;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.DESCRIPTION;
+import static com.empik.complaint_service.util.ComplaintTestFixtures.NUMBER_OF_COMPLAINTS;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.PRODUCT_ID;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORTER_EMAIL;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORTER_NAME;
@@ -25,7 +28,9 @@ import static com.empik.complaint_service.util.ComplaintTestFixtures.TEST_IP;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.UPDATED_DESCRIPTION;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.createComplaintEntity;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.createComplaintRequest;
+import static com.empik.complaint_service.util.ComplaintTestFixtures.createPageRequest;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.createUpdateComplaintRequest;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -34,7 +39,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith({MockitoExtension.class, SoftAssertionsExtension.class})
 class ComplaintServiceTest {
-
     @Mock
     private ComplaintRepository complaintRepository;
     @Mock
@@ -122,5 +126,18 @@ class ComplaintServiceTest {
         assertThatThrownBy(() -> complaintService.updateComplaint(COMPLAINT_ID, request))
                 .isInstanceOf(ComplaintNotFoundException.class)
                 .hasMessage("Complaint with id " + COMPLAINT_ID + " not found");
+    }
+
+    @Test
+    void getComplaintsList() {
+        // given
+        final var complaintsPage = new PageImpl<>(List.of(createComplaintEntity()), createPageRequest(), NUMBER_OF_COMPLAINTS);
+        when(complaintRepository.findAll(createPageRequest())).thenReturn(complaintsPage);
+
+        // when
+        final var result = complaintService.getComplaints(createPageRequest());
+
+        // then
+        assertThat(result).isNotEmpty().hasSize(NUMBER_OF_COMPLAINTS);
     }
 }

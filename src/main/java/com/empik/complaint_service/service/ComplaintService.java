@@ -8,6 +8,8 @@ import com.empik.complaint_service.repository.ComplaintEntity;
 import com.empik.complaint_service.repository.ComplaintRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,5 +72,11 @@ public class ComplaintService {
     private ComplaintNotFoundException handleComplaintNotFound(final Long id) {
         log.info("Complaint with id {} not found", id);
         return new ComplaintNotFoundException("Complaint with id " + id + " not found");
+    }
+
+    public Page<ComplaintResponse> getComplaints(final PageRequest pageRequest) {
+        log.info("Page request: {} {}", pageRequest.getPageSize(), pageRequest.getPageNumber());
+        return complaintRepository.findAll(pageRequest)
+                .map(ComplaintMapper::mapComplaintEntityToDto);
     }
 }

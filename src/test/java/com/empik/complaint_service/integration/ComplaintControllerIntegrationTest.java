@@ -2,6 +2,7 @@ package com.empik.complaint_service.integration;
 
 import com.empik.complaint_service.controller.model.ComplaintResponse;
 import com.empik.complaint_service.repository.ComplaintRepository;
+import com.empik.complaint_service.util.RestPageImpl;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -19,14 +21,19 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Map;
+
 import static com.empik.complaint_service.util.ComplaintTestFixtures.COMPLAINT_ID;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.COUNTRY;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.DESCRIPTION;
+import static com.empik.complaint_service.util.ComplaintTestFixtures.NUMBER_OF_COMPLAINTS;
+import static com.empik.complaint_service.util.ComplaintTestFixtures.PAGE_ERROR_KEY;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.PRODUCT_ID;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORTER_EMAIL;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORTER_NAME;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORT_COUNT_ONE;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORT_COUNT_TWO;
+import static com.empik.complaint_service.util.ComplaintTestFixtures.SIZE_ERROR_KEY;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.TEST_IP;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.UPDATED_DESCRIPTION;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.createComplaintEntityWithoutId;
@@ -155,5 +162,54 @@ class ComplaintControllerIntegrationTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody()).contains("Complaint with id " + COMPLAINT_ID + " not found");
+    }
+
+    @Test
+    void getComplaintsList() {
+        // given
+        complaintRepository.save(createComplaintEntityWithoutId());
+
+        // when
+        final var response = testRestTemplate.exchange(
+                DEFAULT_URI,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<RestPageImpl<ComplaintResponse>>() {}
+        );
+
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getContent()).hasSize(NUMBER_OF_COMPLAINTS);
+    }
+
+    @Test
+    void getComplaintsWithNoContentStatus() {
+        // given & when
+        final var response = testRestTemplate.exchange(
+                DEFAULT_URI,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<RestPageImpl<ComplaintResponse>>() {}
+        );
+
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
+
+    @Test
+    void getComplaintsWithBadRequestError() {
+        // given & when
+        final var response = testRestTemplate.exchange(
+                DEFAULT_URI + "?size=200&page=-1",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<Map<String, String>>() {}
+        );
+
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).containsKey(PAGE_ERROR_KEY);
+        assertThat(response.getBody()).containsKey(SIZE_ERROR_KEY);
     }
 }

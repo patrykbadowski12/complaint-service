@@ -5,6 +5,7 @@ import com.empik.complaint_service.controller.model.Reporter;
 import com.empik.complaint_service.controller.model.UpdateComplaintRequest;
 import com.empik.complaint_service.repository.ComplaintEntity;
 import com.empik.complaint_service.service.GeoIpResponse;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 
@@ -23,6 +24,9 @@ public class ComplaintTestFixtures {
     public static final int REPORT_COUNT_TWO = 2;
     public static final String TEST_IP = "77.65.32.1";
     public static final String HEADER_NAME_X_FORWARDER_FOR = "X-Forwarded-For";
+    public static final String PAGE_ERROR_KEY = "getPagedComplaints.page";
+    public static final String SIZE_ERROR_KEY = "getPagedComplaints.size";
+    public static final int NUMBER_OF_COMPLAINTS = 1;
 
     public static ComplaintRequest createComplaintRequest() {
         return new ComplaintRequest(
@@ -60,5 +64,9 @@ public class ComplaintTestFixtures {
 
     public static UpdateComplaintRequest createUpdateComplaintRequest() {
         return new UpdateComplaintRequest(UPDATED_DESCRIPTION);
+    }
+
+    public static PageRequest createPageRequest() {
+        return PageRequest.of(0, 20);
     }
 }
