@@ -5,6 +5,11 @@ import com.empik.complaint_service.controller.dto.ComplaintResponse;
 import com.empik.complaint_service.controller.dto.UpdateComplaintRequest;
 import com.empik.complaint_service.service.ComplaintService;
 import com.empik.complaint_service.service.geo.IpAddressService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -32,6 +37,12 @@ public class ComplaintController {
     private final ComplaintService complaintService;
     private final IpAddressService ipAddressService;
 
+    @Operation(summary = "Register a new complaint", description = "Creates a new complaint and saves it in the database.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Complaint successfully created",
+                    content = @Content(schema = @Schema(implementation = ComplaintResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid request data")
+    })
     @PostMapping
     public ResponseEntity<ComplaintResponse> registerComplaint(
             final HttpServletRequest httpServletRequest,
@@ -39,6 +50,11 @@ public class ComplaintController {
         return ResponseEntity.ok(complaintService.registerComplaint(request, ipAddressService.getClientIp(httpServletRequest)));
     }
 
+    @Operation(summary = "Update an existing complaint", description = "Modifies the description of an existing complaint.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Complaint description successfully updated"),
+            @ApiResponse(responseCode = "404", description = "Complaint with the given ID not found")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<ComplaintResponse> updateComplaint(
             @PathVariable final Long id,
@@ -46,6 +62,11 @@ public class ComplaintController {
         return ResponseEntity.ok(complaintService.updateComplaint(id, request));
     }
 
+    @Operation(summary = "Get a paginated list of complaints", description = "Returns a paginated list of complaints.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of complaints"),
+            @ApiResponse(responseCode = "204", description = "No complaints found")
+    })
     @GetMapping
     public ResponseEntity<Page<ComplaintResponse>> getPagedComplaints(
             @RequestParam(defaultValue = "0") @Min(0) int page,
@@ -54,9 +75,13 @@ public class ComplaintController {
         return complaints.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(complaints);
     }
 
+    @Operation(summary = "Get a complaint by ID", description = "Returns details of a complaint based on its ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Complaint found"),
+            @ApiResponse(responseCode = "404", description = "Complaint with the given ID not found")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<ComplaintResponse> getComplaint(@PathVariable final Long id) {
         return ResponseEntity.ok(complaintService.getComplaint(id));
     }
-
 }
