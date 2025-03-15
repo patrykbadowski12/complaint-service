@@ -1,11 +1,14 @@
 package com.empik.complaint_service.service;
 
-import com.empik.complaint_service.controller.model.ComplaintRequest;
-import com.empik.complaint_service.controller.model.ComplaintResponse;
-import com.empik.complaint_service.controller.model.UpdateComplaintRequest;
+import com.empik.complaint_service.controller.dto.ComplaintRequest;
+import com.empik.complaint_service.controller.dto.ComplaintResponse;
+import com.empik.complaint_service.controller.dto.UpdateComplaintRequest;
 import com.empik.complaint_service.exceptions.ComplaintNotFoundException;
 import com.empik.complaint_service.repository.ComplaintEntity;
 import com.empik.complaint_service.repository.ComplaintRepository;
+import com.empik.complaint_service.service.factory.ComplaintFactory;
+import com.empik.complaint_service.service.geo.GeoLocationService;
+import com.empik.complaint_service.service.mapper.ComplaintMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -66,7 +69,7 @@ public class ComplaintService {
     private ComplaintResponse createNewComplaint(final ComplaintRequest request, final String reporterIpAddress) {
         final var reporterCountryByIp = geoLocationService.getCountryByIp(reporterIpAddress);
         return Optional.of(request)
-                .map(req -> ComplaintMapper.createComplaintEntity(req, reporterCountryByIp))
+                .map(req -> ComplaintFactory.createComplaintEntity(req, reporterCountryByIp))
                 .map(complaintRepository::save)
                 .map(savedComplaint -> {
                     log.info("Complaint with id {} successfully created", savedComplaint.getId());

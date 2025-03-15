@@ -1,5 +1,6 @@
 package com.empik.complaint_service.service;
 
+import com.empik.complaint_service.service.geo.IpAddressService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

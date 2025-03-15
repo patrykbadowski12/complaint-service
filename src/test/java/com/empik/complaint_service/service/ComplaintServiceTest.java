@@ -3,6 +3,7 @@ package com.empik.complaint_service.service;
 import com.empik.complaint_service.exceptions.ComplaintNotFoundException;
 import com.empik.complaint_service.repository.ComplaintEntity;
 import com.empik.complaint_service.repository.ComplaintRepository;
+import com.empik.complaint_service.service.geo.GeoIPService;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ class ComplaintServiceTest {
     @Mock
     private ComplaintRepository complaintRepository;
     @Mock
-    private GeoLocationService geoLocationService;
+    private GeoIPService geoIPService;
     @InjectMocks
     private ComplaintService complaintService;
 
@@ -53,7 +54,7 @@ class ComplaintServiceTest {
         // given
         when(complaintRepository.findByReporterNameAndProductId(anyString(), anyLong())).thenReturn(Optional.empty());
         when(complaintRepository.save(any(ComplaintEntity.class))).thenReturn(createComplaintEntity());
-        when(geoLocationService.getCountryByIp(TEST_IP)).thenReturn(COUNTRY);
+        when(geoIPService.getCountryByIp(TEST_IP)).thenReturn(COUNTRY);
 
         // when
         final var result = complaintService.registerComplaint(createComplaintRequest(), TEST_IP);

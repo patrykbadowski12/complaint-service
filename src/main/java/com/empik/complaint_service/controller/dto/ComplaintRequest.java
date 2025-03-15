@@ -1,4 +1,4 @@
-package com.empik.complaint_service.controller.model;
+package com.empik.complaint_service.controller.dto;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

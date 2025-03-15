@@ -1,10 +1,10 @@
 package com.empik.complaint_service.util;
 
-import com.empik.complaint_service.controller.model.ComplaintRequest;
-import com.empik.complaint_service.controller.model.Reporter;
-import com.empik.complaint_service.controller.model.UpdateComplaintRequest;
+import com.empik.complaint_service.controller.dto.ComplaintRequest;
+import com.empik.complaint_service.controller.dto.Reporter;
+import com.empik.complaint_service.controller.dto.UpdateComplaintRequest;
 import com.empik.complaint_service.repository.ComplaintEntity;
-import com.empik.complaint_service.service.GeoIpResponse;
+import com.empik.complaint_service.service.geo.GeoIpResponse;
 import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package com.empik.complaint_service.service;
+package com.empik.complaint_service.service.geo;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

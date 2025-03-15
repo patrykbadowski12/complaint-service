@@ -1,5 +1,8 @@
 package com.empik.complaint_service.service;
 
+import com.empik.complaint_service.service.geo.GeoIPService;
+import com.empik.complaint_service.service.geo.GeoIpFeignClient;
+import com.empik.complaint_service.service.geo.GeoIpResponse;
 import feign.FeignException;
 import feign.Request;
 import feign.Response;
@@ -21,7 +24,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @ExtendWith(MockitoExtension.class)
-class GeoLocationServiceTest {
+class GeoIPServiceTest {
 
     private static final String UNKNOWN_VALUE = "Unknown";
     private static final String TEST_URL = "http://test-url";
@@ -30,7 +33,7 @@ class GeoLocationServiceTest {
     @Mock
     private GeoIpFeignClient geoIpFeignClient;
     @InjectMocks
-    private GeoLocationService geoLocationService;
+    private GeoIPService geoIPService;
 
     @Test
     void getCountryByIp() {
@@ -38,7 +41,7 @@ class GeoLocationServiceTest {
         when(geoIpFeignClient.getGeoIpInfo(TEST_IP)).thenReturn(createGeoIpResponse());
 
         // when
-        final var result = geoLocationService.getCountryByIp(TEST_IP);
+        final var result = geoIPService.getCountryByIp(TEST_IP);
 
         // then
         assertThat(result).isEqualTo(COUNTRY);
@@ -50,7 +53,7 @@ class GeoLocationServiceTest {
         when(geoIpFeignClient.getGeoIpInfo(TEST_IP)).thenReturn(new GeoIpResponse(null, null, null));
 
         // when
-        final var result = geoLocationService.getCountryByIp(TEST_IP);
+        final var result = geoIPService.getCountryByIp(TEST_IP);
 
         // then
         assertThat(result).isEqualTo(UNKNOWN_VALUE);
@@ -62,7 +65,7 @@ class GeoLocationServiceTest {
         when(geoIpFeignClient.getGeoIpInfo(TEST_IP)).thenThrow(FeignException.errorStatus(ERROR_MESSAGE, createApiResponseWithError()));
 
         // when
-        final var country = geoLocationService.getCountryByIp(TEST_IP);
+        final var country = geoIPService.getCountryByIp(TEST_IP);
 
         // then
         assertEquals(UNKNOWN_VALUE, country);

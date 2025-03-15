@@ -1,4 +1,4 @@
-package com.empik.complaint_service.service;
+package com.empik.complaint_service.service.geo;
 
 import feign.FeignException;
 import io.micrometer.common.util.StringUtils;
@@ -9,13 +9,14 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-class GeoLocationService {
+public class GeoIPService implements GeoLocationService {
 
     private static final String UNKNOWN_VALUE = "Unknown";
 
     private final GeoIpFeignClient geoIpFeignClient;
 
-    String getCountryByIp(final String ip) {
+    @Override
+    public String getCountryByIp(final String ip) {
         log.info("Sending request to geoApiInfo with IP: {}", ip);
         try {
             final var response = geoIpFeignClient.getGeoIpInfo(ip);

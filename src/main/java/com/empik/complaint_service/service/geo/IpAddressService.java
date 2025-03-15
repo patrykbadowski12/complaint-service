@@ -1,4 +1,4 @@
-package com.empik.complaint_service.service;
+package com.empik.complaint_service.service.geo;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;

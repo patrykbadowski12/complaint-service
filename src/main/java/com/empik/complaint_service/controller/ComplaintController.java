@@ -1,10 +1,10 @@
 package com.empik.complaint_service.controller;
 
-import com.empik.complaint_service.controller.model.ComplaintRequest;
-import com.empik.complaint_service.controller.model.ComplaintResponse;
-import com.empik.complaint_service.controller.model.UpdateComplaintRequest;
+import com.empik.complaint_service.controller.dto.ComplaintRequest;
+import com.empik.complaint_service.controller.dto.ComplaintResponse;
+import com.empik.complaint_service.controller.dto.UpdateComplaintRequest;
 import com.empik.complaint_service.service.ComplaintService;
-import com.empik.complaint_service.service.IpAddressService;
+import com.empik.complaint_service.service.geo.IpAddressService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;

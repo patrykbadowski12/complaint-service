@@ -1,6 +1,6 @@
 package com.empik.complaint_service.integration;
 
-import com.empik.complaint_service.controller.model.ComplaintResponse;
+import com.empik.complaint_service.controller.dto.ComplaintResponse;
 import com.empik.complaint_service.repository.ComplaintRepository;
 import com.empik.complaint_service.util.RestPageImpl;
 import org.assertj.core.api.SoftAssertions;
