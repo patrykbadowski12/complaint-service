@@ -49,7 +49,7 @@ Alternatively, you can configure an **in-memory database** (H2) for testing by m
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-repo/complaint-service.git
+   git clone https://github.com/patrykbadowski12/complaint-service.git
    cd complaint-service
    ```
 2. Build the application:
