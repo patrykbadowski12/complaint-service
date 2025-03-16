@@ -24,7 +24,7 @@ import java.util.Map;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.COMPLAINT_ID;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.COUNTRY;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.DESCRIPTION;
-import static com.empik.complaint_service.util.ComplaintTestFixtures.NUMBER_OF_COMPLAINTS;
+import static com.empik.complaint_service.util.ComplaintTestFixtures.NUMBER_OF_COMPLAINTS_TWO;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.PAGE_ERROR_KEY;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.PRODUCT_ID;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORTER_EMAIL;
@@ -34,6 +34,7 @@ import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORT_COUN
 import static com.empik.complaint_service.util.ComplaintTestFixtures.SIZE_ERROR_KEY;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.TEST_IP;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.UPDATED_DESCRIPTION;
+import static com.empik.complaint_service.util.ComplaintTestFixtures.createComplaintEntityWithProduct;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.createComplaintEntityWithoutId;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.createComplaintRequest;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.createUpdateComplaintRequest;
@@ -158,7 +159,9 @@ class ComplaintControllerIntegrationTest {
     @Test
     void getComplaintsList() {
         // given
+        final var secondProductId = 572L;
         complaintRepository.save(createComplaintEntityWithoutId());
+        complaintRepository.save(createComplaintEntityWithProduct(secondProductId));
 
         // when
         final var response = testRestTemplate.exchange(
@@ -170,8 +173,11 @@ class ComplaintControllerIntegrationTest {
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getContent()).hasSize(NUMBER_OF_COMPLAINTS);
+        final var body = response.getBody();
+        assertThat(body).isNotNull();
+        assertThat(body.getContent()).hasSize(NUMBER_OF_COMPLAINTS_TWO);
+        assertThat(body.getContent().getFirst().productId()).isEqualTo(secondProductId);
+        assertThat(body.getContent().get(1).productId()).isEqualTo(PRODUCT_ID);
     }
 
     @Test

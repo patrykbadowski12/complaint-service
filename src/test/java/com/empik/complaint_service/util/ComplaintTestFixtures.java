@@ -26,7 +26,8 @@ public class ComplaintTestFixtures {
     public static final String HEADER_NAME_X_FORWARDER_FOR = "X-Forwarded-For";
     public static final String PAGE_ERROR_KEY = "getPagedComplaints.page";
     public static final String SIZE_ERROR_KEY = "getPagedComplaints.size";
-    public static final int NUMBER_OF_COMPLAINTS = 1;
+    public static final int NUMBER_OF_COMPLAINTS_ONE = 1;
+    public static final int NUMBER_OF_COMPLAINTS_TWO = 2;
 
     public static ComplaintRequest createComplaintRequest() {
         return new ComplaintRequest(
@@ -37,17 +38,21 @@ public class ComplaintTestFixtures {
     }
 
     public static ComplaintEntity createComplaintEntity() {
-        return createComplaintEntity(COMPLAINT_ID);
+        return createComplaintEntity(COMPLAINT_ID, PRODUCT_ID);
     }
 
     public static ComplaintEntity createComplaintEntityWithoutId() {
-        return createComplaintEntity(null);
+        return createComplaintEntity(null, PRODUCT_ID);
     }
 
-    private static ComplaintEntity createComplaintEntity(Long id) {
+    public static ComplaintEntity createComplaintEntityWithProduct(final Long productId) {
+        return createComplaintEntity(null, productId);
+    }
+
+    public static ComplaintEntity createComplaintEntity(final Long id, final Long productId) {
         return ComplaintEntity.builder()
                 .id(id)
-                .productId(PRODUCT_ID)
+                .productId(productId)
                 .description(DESCRIPTION)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())

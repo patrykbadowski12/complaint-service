@@ -14,9 +14,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,8 +72,12 @@ public class ComplaintController {
     @GetMapping
     public ResponseEntity<Page<ComplaintResponse>> getPagedComplaints(
             @RequestParam(defaultValue = "0") @Min(0) int page,
-            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
-        final var complaints = complaintService.getComplaints(PageRequest.of(page, size));
+            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @Pattern(regexp = "asc|desc", message = "Sort direction must be 'asc' or 'desc'")
+            @RequestParam(defaultValue = "desc") final String direction) {
+        final var sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        final var complaints = complaintService.getComplaints(PageRequest.of(page, size, sort));
         return complaints.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(complaints);
     }
 

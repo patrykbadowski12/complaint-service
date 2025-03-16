@@ -42,7 +42,6 @@ public class ComplaintService {
     }
 
     public Page<ComplaintResponse> getComplaints(final PageRequest pageRequest) {
-        log.info("Page request: {} {}", pageRequest.getPageSize(), pageRequest.getPageNumber());
         return complaintRepository.findAll(pageRequest)
                 .map(ComplaintMapper::mapComplaintEntityToDto);
     }

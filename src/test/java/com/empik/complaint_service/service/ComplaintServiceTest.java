@@ -19,7 +19,7 @@ import java.util.Optional;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.COMPLAINT_ID;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.COUNTRY;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.DESCRIPTION;
-import static com.empik.complaint_service.util.ComplaintTestFixtures.NUMBER_OF_COMPLAINTS;
+import static com.empik.complaint_service.util.ComplaintTestFixtures.NUMBER_OF_COMPLAINTS_ONE;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.PRODUCT_ID;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORTER_EMAIL;
 import static com.empik.complaint_service.util.ComplaintTestFixtures.REPORTER_NAME;
@@ -134,14 +134,14 @@ class ComplaintServiceTest {
     @Test
     void getComplaintsList() {
         // given
-        final var complaintsPage = new PageImpl<>(List.of(createComplaintEntity()), createPageRequest(), NUMBER_OF_COMPLAINTS);
+        final var complaintsPage = new PageImpl<>(List.of(createComplaintEntity()), createPageRequest(), NUMBER_OF_COMPLAINTS_ONE);
         when(complaintRepository.findAll(createPageRequest())).thenReturn(complaintsPage);
 
         // when
         final var result = complaintService.getComplaints(createPageRequest());
 
         // then
-        assertThat(result).isNotEmpty().hasSize(NUMBER_OF_COMPLAINTS);
+        assertThat(result).isNotEmpty().hasSize(NUMBER_OF_COMPLAINTS_ONE);
     }
 
     @Test

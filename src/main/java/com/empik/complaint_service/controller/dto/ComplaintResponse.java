@@ -14,5 +14,4 @@ public record ComplaintResponse(
         String reporterEmail,
         String reporterCountry,
         int reportCount
-) {
-}
+) { }
